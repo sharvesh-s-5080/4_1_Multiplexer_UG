@@ -37,14 +37,15 @@ module mux4_gate (
     input  wire S0, S1,
     output wire Y
 );
-    // Declare internal wires
-
-    // Write NOT gates
-
-    // Write AND gates
-
-    // Write OR gate
-
+    wire nS0, nS1;
+    wire w0, w1, w2, w3;
+    not g1 (nS0, S0);
+    not g2 (nS1, S1);
+    and g3 (w0, I0, nS1, nS0);
+    and g4 (w1, I1, nS1, S0);
+    and g5 (w2, I2, S1, nS0);
+    and g6 (w3, I3, S1, S0);
+    or  g7 (Y, w0, w1, w2, w3);
 endmodule
 ```
 4:1 MUX Gate-Level Implementation- Testbench
@@ -52,32 +53,27 @@ endmodule
 // Testbench Skeleton
 `timescale 1ns/1ps
 module tb_mux4_gate;
-
-    // Declare testbench signals
     reg I0, I1, I2, I3;
     reg S0, S1;
     wire Y;
 
-    // Instantiate DUT
     mux4_gate uut (
         .I0(I0), .I1(I1), .I2(I2), .I3(I3),
         .S0(S0), .S1(S1),
         .Y(Y)
     );
-
     initial begin
-        // Initialize inputs
-
-        // Apply test cases
-
-        // Stop simulation
-        #10 $stop;
+        I0 = 1; I1 = 0; I2 = 1; I3 = 0;        
+        {S1, S0} = 2'b00; #10;
+        {S1, S0} = 2'b01; #10;
+        {S1, S0} = 2'b10; #10;
+        {S1, S0} = 2'b11; #10;
+        $finish;
     end
-
 endmodule
 ```
 # Simulated Output Gate Level Modelling
-______ Here Paste the Simulated output ___________
+<img width="622" height="397" alt="image" src="https://github.com/user-attachments/assets/953e1cb0-e96a-4c5f-9ed1-bfcd5f70d573" />
 
 4:1 MUX Data flow Modelling
 ```
@@ -87,8 +83,10 @@ module mux4_dataflow (
     input  wire S0, S1,
     output wire Y
 );
-    // Write assign statement using operators
-
+    assign Y = (~S1 & ~S0 & I0) | 
+               (~S1 &  S0 & I1) | 
+               ( S1 & ~S0 & I2) | 
+               ( S1 &  S0 & I3);
 endmodule
 ```
 4:1 MUX Data flow Modelling- Testbench
@@ -96,13 +94,10 @@ endmodule
 // Testbench Skeleton
 `timescale 1ns/1ps
 module tb_mux4_dataflow;
-
-    // Declare testbench signals
     reg I0, I1, I2, I3;
     reg S0, S1;
     wire Y;
 
-    // Instantiate DUT
     mux4_dataflow uut (
         .I0(I0), .I1(I1), .I2(I2), .I3(I3),
         .S0(S0), .S1(S1),
@@ -110,18 +105,19 @@ module tb_mux4_dataflow;
     );
 
     initial begin
-        // Initialize inputs
-
-        // Apply test cases
-
-        // Stop simulation
-        #10 $stop;
+        I0 = 0; I1 = 1; I2 = 0; I3 = 1;
+        
+        {S1, S0} = 2'b00; #10;
+        {S1, S0} = 2'b01; #10;
+        {S1, S0} = 2'b10; #10;
+        {S1, S0} = 2'b11; #10;
+        
+        $finish;
     end
-
 endmodule
 ```
 # Simulated Output Dataflow Modelling
-_______ Here Paste the Simulated output ___________
+<img width="1285" height="426" alt="image" src="https://github.com/user-attachments/assets/836c6cc6-c165-4ffb-bf06-d651f4e75501" />
 
 4:1 MUX Behavioral Implementation
 ```
@@ -135,7 +131,13 @@ module mux4_to_1_behavioral (
     output reg Y
 );
     always @(*) begin
-        
+        case ({S1, S0})
+            2'b00: Y = A;
+            2'b01: Y = B;
+            2'b10: Y = C;
+            2'b11: Y = D;
+            default: Y = 1'bx;
+        endcase
     end
 endmodule
 ```
@@ -158,11 +160,13 @@ module tb_mux4_behavioral;
     );
 
     initial begin
-        // Initialize inputs
-
-        // Apply test cases
-
-        // Stop simulation
+       I0 = 1; I1 = 0; I2 = 0; I3 = 1;
+        {S1, S0} = 2'b00; #10;
+        {S1, S0} = 2 me01; #10;
+        {S1, S0} = 2'b10; #10;
+        {S1, S0} = 2'b11; #10;
+        
+        $finish;
         #10 $stop;
     end
 
@@ -191,26 +195,46 @@ module mux4_to_1_structural (
     input wire S1,
     output wire Y
 );
+wire m1_out, m2_out;
+
+    mux2_to_1 mux_low  (.A(A), .B(B), .S(S0), .Y(m1_out));
+    mux2_to_1 mux_high (.A(C), .B(D), .S(S0), .Y(m2_out));
+    mux2_to_1 mux_out  (.A(m1_out), .B(m2_out), .S(S1), .Y(Y));
+endmodule
 ```
 # Testbench Implementation
 ```
 `timescale 1ns / 1ps
-
 module mux4_to_1_tb;
-    reg A, B, C, D, S0, S1;
-    wire Y_gate, Y_dataflow, Y_behavioral, Y_structural;
-
-    
-
+    reg A, B, C, D;
+    reg S0, S1;
+    wire Y_structural;
+    mux4_to_1_structural uut (.A(A),.B(B),.C(C),.D(D),.S0(S0),.S1(S1),.Y(Y_structural));
     initial begin
-        A = 0; B = 0; C = 0; D = 0; S0 = 0; S1 = 0;
+        $monitor(
+            "Time = %0t | A=%b B=%b C=%b D=%b | S1S0=%b%b | Y=%b",
+            $time, A, B, C, D, S1, S0, Y_structural
+        );
+        A = 1'b0;
+        B = 1'b1;
+        C = 1'b0;
+        D = 1'b1;
+        S1 = 1'b0;
+        S0 = 1'b0;
+        #10;
+        S1 = 1'b0;
+        S0 = 1'b1;
+        #10;
+        S1 = 1'b1;
+        S0 = 1'b0;
+        #10;
+        S1 = 1'b1;
+        S0 = 1'b1;
+        #10;
 
-      
-        #10 $stop;
+        $finish;
     end
 
-   
-    end
 endmodule
 ```
 # Simulated Output Structural Modelling
