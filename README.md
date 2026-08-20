@@ -145,16 +145,8 @@ endmodule
 ```
 // Testbench Skeleton
 `timescale 1ns/1ps
-module tb_mux4_behavioral;
-
-    // Declare testbench signals
-    reg I0, I1, I2, I3;
-    reg S0, S1;
-    wire Y;
-
-    // Instantiate DUT
-    mux4_behavioral uut (
-        .I0(I0), .I1(I1), .I2(I2), .I3(I3),
+mux4_to_1_behavioral uut (
+        .A(I0), .B(I1), .C(I2), .D(I3),
         .S0(S0), .S1(S1),
         .Y(Y)
     );
@@ -162,7 +154,7 @@ module tb_mux4_behavioral;
     initial begin
        I0 = 1; I1 = 0; I2 = 0; I3 = 1;
         {S1, S0} = 2'b00; #10;
-        {S1, S0} = 2 me01; #10;
+        {S1, S0} = 2'b01; #10;
         {S1, S0} = 2'b10; #10;
         {S1, S0} = 2'b11; #10;
         
@@ -238,7 +230,7 @@ module mux4_to_1_tb;
 endmodule
 ```
 # Simulated Output Structural Modelling
-_______ Here Paste the Simulated output ___________
+<img width="784" height="311" alt="image" src="https://github.com/user-attachments/assets/e5855efd-72cb-45d6-83b2-3a307710622e" />
 
 # CONCLUSION
 In this experiment, a 4:1 Multiplexer was successfully designed and simulated using Verilog HDL across four different modeling styles: Gate-Level, Data Flow, Behavioral, and Structural.The simulation results verified the correct functionality of the MUX, with all implementations producing identical outputs for the given input conditions.
