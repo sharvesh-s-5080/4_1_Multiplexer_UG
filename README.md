@@ -165,7 +165,7 @@ mux4_to_1_behavioral uut (
 endmodule
 ```
 # Simulated Output Behavioral Modelling
-_______ Here Paste the Simulated output ___________
+<img width="838" height="323" alt="image" src="https://github.com/user-attachments/assets/974b0a37-6b64-4d8a-8e21-dfcb98ee1366" />
 
 #4:1 MUX Structural Implementation
 ```
